@@ -1,0 +1,114 @@
+--- /tmp/up/Panel.qml	2026-09-09 11:16:53.513192554 +0200
++++ Panel.qml	2026-09-09 11:16:53.503737740 +0200
+@@ -64,10 +64,10 @@
+   // convention. Clicking the grid's "W" heading writes the choice back to
+   // shell.json.
+   readonly property int weekStart: Model.normalizedWeekStart(setting("weekStartDay", null), Qt.locale().firstDayOfWeek)
+-  // The interface is English throughout, so day names are not taken from the
+-  // system locale. Where the week starts still is: that is a regional
+-  // convention rather than a translation, and it stays overridable above.
+-  readonly property var labelLocale: Qt.locale("en_US")
++  // Upstream pins these to en_US because the Omarchy interface is English
++  // throughout. This build is not, so the day names follow the system locale
++  // like the rest of the desktop does.
++  readonly property var labelLocale: Qt.locale()
+   readonly property string nextWeekStartLabel: labelLocale.dayName(Model.toggledWeekStart(weekStart), Locale.LongFormat)
+   readonly property var weekdays: Model.weekdayOrder(weekStart)
+   readonly property var weeks: Model.monthGrid(viewYear, viewMonth, weekStart, todayKey)
+@@ -313,7 +313,7 @@
+                 id: heroDate
+                 textFormat: Text.PlainText
+                 anchors.verticalCenter: parent.verticalCenter
+-                text: Qt.formatDate(root.today, "MMMM d")
++                text: root.today.toLocaleDateString(Qt.locale(), "d. MMMM")
+                 color: heroMouse.containsMouse
+                   ? Style.hoverStateColor(root.contentForeground, Color.accent)
+                   : root.contentForeground
+@@ -336,7 +336,7 @@
+ 
+               PanelToolTip {
+                 visible: heroMouse.containsMouse
+-                text: "Back to today"
++                text: "Nazaj na danes"
+                 fontFamily: root.contentFontFamily
+               }
+             }
+@@ -369,7 +369,7 @@
+ 
+                 Text {
+                   anchors.verticalCenter: parent.verticalCenter
+-                  text: "BORN"
++                  text: "ROJSTVO"
+                   color: Qt.darker(root.contentForeground, 1.5)
+                   font.family: root.contentFontFamily
+                   font.pixelSize: Style.font.bodySmall
+@@ -392,7 +392,7 @@
+                   anchors.verticalCenter: parent.verticalCenter
+                   anchors.verticalCenterOffset: 0
+                   leftPadding: Style.space(6)
+-                  text: "LIVE TO"
++                  text: "ŽIVETI DO"
+                   color: Qt.darker(root.contentForeground, 1.5)
+                   font.family: root.contentFontFamily
+                   font.pixelSize: Style.font.bodySmall
+@@ -479,7 +479,7 @@
+                 id: lifeLabel
+                 anchors.left: parent.left
+                 anchors.verticalCenter: parent.verticalCenter
+-                text: "LIFE"
++                text: "ŽIVLJENJE"
+                 color: Qt.darker(root.contentForeground, 1.5)
+                 font.family: root.contentFontFamily
+                 font.pixelSize: Style.font.bodySmall
+@@ -598,7 +598,7 @@
+ 
+                   PanelToolTip {
+                     visible: weekStartMouse.containsMouse
+-                    text: "Start weeks on " + root.nextWeekStartLabel
++                    text: "Začetek tedna: " + root.nextWeekStartLabel
+                     fontFamily: root.contentFontFamily
+                   }
+                 }
+@@ -721,7 +721,7 @@
+                 // "MAY 2026" and a "SEPTEMBER 2026".
+                 width: Style.space(130)
+                 horizontalAlignment: Text.AlignHCenter
+-                text: Qt.formatDate(root.viewDate, "MMMM yyyy").toUpperCase()
++                text: root.viewDate.toLocaleDateString(Qt.locale(), "MMMM yyyy").toLocaleUpperCase(Qt.locale().name.replace("_", "-"))
+                 color: Qt.darker(root.contentForeground, 1.4)
+                 font.family: root.contentFontFamily
+                 font.pixelSize: Style.font.body
+@@ -735,7 +735,7 @@
+                 anchors.leftMargin: -Style.space(8)
+                 anchors.verticalCenter: parent.verticalCenter
+                 iconText: "󰅁"
+-                tooltipText: "Previous month"
++                tooltipText: "Prejšnji mesec"
+                 foreground: root.contentForeground
+                 fontFamily: root.contentFontFamily
+                 onClicked: root.moveMonth(-1)
+@@ -746,7 +746,7 @@
+                 anchors.rightMargin: -Style.space(8)
+                 anchors.verticalCenter: parent.verticalCenter
+                 iconText: "󰅂"
+-                tooltipText: "Next month"
++                tooltipText: "Naslednji mesec"
+                 foreground: root.contentForeground
+                 fontFamily: root.contentFontFamily
+                 onClicked: root.moveMonth(1)
+--- /tmp/up/BarWidget.qml	2026-09-09 11:16:53.513093467 +0200
++++ BarWidget.qml	2026-09-09 11:15:35.423749341 +0200
+@@ -52,8 +52,12 @@
+       root.bar.shell.updateEntryInline(root.moduleName, entry)
+   }
+ 
++  // Qt.formatDateTime() renders day and month names from the C locale
++  // whatever LANG says -- "Tuesday" in a process whose Qt.locale() is
++  // already sl_SI. Date.toLocaleString() takes the same format string and
++  // reads the system locale, so "dddd HH:mm" becomes "torek 12:21".
+   function formatted(date) {
+-    return Qt.formatDateTime(date, activeFormat.replace(/ww/g, Model.isoWeekLiteral(date.getFullYear(), date.getMonth(), date.getDate())))
++    return date.toLocaleString(Qt.locale(), activeFormat.replace(/ww/g, Model.isoWeekLiteral(date.getFullYear(), date.getMonth(), date.getDate())))
+   }
+ 
+   // ---- Calendar popup. Shape contract for shell.summon/hide/toggle
