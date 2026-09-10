@@ -1,11 +1,12 @@
-# Ura — Omarchy's clock in Slovenian
+# Clock (translated)
 
-Omarchy's clock widget with Slovenian day and month names, and a Slovenian
-calendar popup. Drop-in replacement: install it and it takes the built-in
-clock's place in the bar, keeping its position and its format settings.
+Omarchy's clock with day and month names from the system locale, and its own
+strings read from a translation catalog. Drop-in replacement: install it and it
+takes the built-in clock's place in the bar, keeping its position and its format
+settings.
 
 ```bash
-omarchy plugin add https://github.com/sbelcl/omarchy-clock-sl.git --enable
+omarchy plugin add https://github.com/sbelcl/omarchy-clock-l10n.git --enable
 ```
 
 Removing it puts the built-in clock back.
@@ -30,19 +31,30 @@ as a fork rather than as a setting. `manifest.json` declares
 built-in's IPC here, take its slot in the bar with its settings intact, and
 restore the built-in if this is removed.
 
-## One translation note
+## Where the words come from
 
-*Start weeks on Wednesday* became **Začetek tedna: sreda** rather than
-*Začni teden v sredo*. Qt hands out day names in the nominative, and the
-preposition would need the accusative — `v ponedeljek` but `v sredo`, not
-`v sreda`. Rephrasing to a label plus a colon needs no agreement at all,
-which a string table could not have fixed.
+```
+~/.config/omarchy/locales/<language>.json    e.g. sl.json
+```
+
+The same catalog the other translated panels read — a plain map of English
+string to translation, watched, so an edit shows up without a restart. No
+catalog reads as English, which is the source of every key.
+[omarchy-language](https://github.com/sbelcl/omarchy-language) ships and
+installs a Slovenian one; this plugin does not require it.
+
+One translation note, because it shows why a table alone is not enough:
+*Start weeks on %1* is Slovenian's **Začetek tedna: %1** rather than *Začni
+teden v %1*. Qt hands out day names in the nominative and the preposition wants
+the accusative — `v ponedeljek` but `v sredo`, not `v sreda`. Rephrasing to a
+label and a colon needs no agreement at all. Only the sentence could fix that;
+no amount of word-for-word translation would have.
 
 ## Keeping it current
 
 This is a copy of Omarchy's clock at **v4.0.2**, so upstream fixes do not
 reach it on their own. `upstream.diff` records everything this build changes —
-six strings, two lines of behaviour. To re-sync after an Omarchy release:
+three locale-aware date calls, seven strings through the catalog. To re-sync after an Omarchy release:
 
 ```bash
 cp /usr/share/omarchy/shell/plugins/panels/clock/{BarWidget.qml,Panel.qml,Model.js} .

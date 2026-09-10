@@ -20,6 +20,8 @@ Panel {
   ipcTarget: "omarchy.clock"
   manageIpc: false
 
+  Translations { id: i18n }
+
   property var anchorItem: null
 
   // The bar tracks the widget mounted in its slot — BarWidget.qml — not this
@@ -336,7 +338,7 @@ Panel {
 
               PanelToolTip {
                 visible: heroMouse.containsMouse
-                text: "Nazaj na danes"
+                text: i18n.t("Back to today")
                 fontFamily: root.contentFontFamily
               }
             }
@@ -369,7 +371,7 @@ Panel {
 
                 Text {
                   anchors.verticalCenter: parent.verticalCenter
-                  text: "ROJSTVO"
+                  text: i18n.t("BORN")
                   color: Qt.darker(root.contentForeground, 1.5)
                   font.family: root.contentFontFamily
                   font.pixelSize: Style.font.bodySmall
@@ -392,7 +394,7 @@ Panel {
                   anchors.verticalCenter: parent.verticalCenter
                   anchors.verticalCenterOffset: 0
                   leftPadding: Style.space(6)
-                  text: "ŽIVETI DO"
+                  text: i18n.t("LIVE TO")
                   color: Qt.darker(root.contentForeground, 1.5)
                   font.family: root.contentFontFamily
                   font.pixelSize: Style.font.bodySmall
@@ -479,7 +481,7 @@ Panel {
                 id: lifeLabel
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
-                text: "ŽIVLJENJE"
+                text: i18n.t("LIFE")
                 color: Qt.darker(root.contentForeground, 1.5)
                 font.family: root.contentFontFamily
                 font.pixelSize: Style.font.bodySmall
@@ -598,7 +600,7 @@ Panel {
 
                   PanelToolTip {
                     visible: weekStartMouse.containsMouse
-                    text: "Začetek tedna: " + root.nextWeekStartLabel
+                    text: i18n.t("Start weeks on %1", root.nextWeekStartLabel)
                     fontFamily: root.contentFontFamily
                   }
                 }
@@ -735,7 +737,7 @@ Panel {
                 anchors.leftMargin: -Style.space(8)
                 anchors.verticalCenter: parent.verticalCenter
                 iconText: "󰅁"
-                tooltipText: "Prejšnji mesec"
+                tooltipText: i18n.t("Previous month")
                 foreground: root.contentForeground
                 fontFamily: root.contentFontFamily
                 onClicked: root.moveMonth(-1)
@@ -746,7 +748,7 @@ Panel {
                 anchors.rightMargin: -Style.space(8)
                 anchors.verticalCenter: parent.verticalCenter
                 iconText: "󰅂"
-                tooltipText: "Naslednji mesec"
+                tooltipText: i18n.t("Next month")
                 foreground: root.contentForeground
                 fontFamily: root.contentFontFamily
                 onClicked: root.moveMonth(1)
