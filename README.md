@@ -52,7 +52,7 @@ no amount of word-for-word translation would have.
 
 ## Keeping it current
 
-This is a copy of Omarchy's clock at **v4.0.2**, so upstream fixes do not
+This is a copy of Omarchy's clock at **v4.0.3**, so upstream fixes do not
 reach it on their own. `upstream.diff` records everything this build changes —
 three locale-aware date calls, seven strings through the catalog. To re-sync after an Omarchy release:
 

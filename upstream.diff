@@ -1,5 +1,5 @@
---- /tmp/c1.qml	2026-09-10 12:57:07.857095851 +0200
-+++ Panel.qml	2026-09-10 12:56:46.890007530 +0200
+--- Panel.qml	2026-09-08 20:30:57.000000000 +0200
++++ Panel.qml	2026-09-15 10:46:37.030169242 +0200
 @@ -20,6 +20,8 @@
    ipcTarget: "omarchy.clock"
    manageIpc: false
@@ -24,18 +24,7 @@
    readonly property string nextWeekStartLabel: labelLocale.dayName(Model.toggledWeekStart(weekStart), Locale.LongFormat)
    readonly property var weekdays: Model.weekdayOrder(weekStart)
    readonly property var weeks: Model.monthGrid(viewYear, viewMonth, weekStart, todayKey)
-@@ -119,9 +121,7 @@
-   // Summoning by hotkey moves no pointer, so a hover the bar was still
-   // holding must not keep the center indicators revealed behind the panel.
-   function setCenterHoverRevealSuppressed(value) {
--    if (root.bar && typeof root.bar.setCenterHoverRevealSuppressed === "function")
--      root.bar.setCenterHoverRevealSuppressed(value)
--    else if (root.bar && "centerHoverRevealSuppressed" in root.bar)
-+    if (root.bar && "centerHoverRevealSuppressed" in root.bar)
-       root.bar.centerHoverRevealSuppressed = value
-   }
- 
-@@ -315,7 +315,7 @@
+@@ -315,7 +317,7 @@
                  id: heroDate
                  textFormat: Text.PlainText
                  anchors.verticalCenter: parent.verticalCenter
@@ -44,7 +33,7 @@
                  color: heroMouse.containsMouse
                    ? Style.hoverStateColor(root.contentForeground, Color.accent)
                    : root.contentForeground
-@@ -338,7 +338,7 @@
+@@ -338,7 +340,7 @@
  
                PanelToolTip {
                  visible: heroMouse.containsMouse
@@ -53,7 +42,7 @@
                  fontFamily: root.contentFontFamily
                }
              }
-@@ -371,7 +371,7 @@
+@@ -371,7 +373,7 @@
  
                  Text {
                    anchors.verticalCenter: parent.verticalCenter
@@ -62,7 +51,7 @@
                    color: Qt.darker(root.contentForeground, 1.5)
                    font.family: root.contentFontFamily
                    font.pixelSize: Style.font.bodySmall
-@@ -394,7 +394,7 @@
+@@ -394,7 +396,7 @@
                    anchors.verticalCenter: parent.verticalCenter
                    anchors.verticalCenterOffset: 0
                    leftPadding: Style.space(6)
@@ -71,7 +60,7 @@
                    color: Qt.darker(root.contentForeground, 1.5)
                    font.family: root.contentFontFamily
                    font.pixelSize: Style.font.bodySmall
-@@ -481,7 +481,7 @@
+@@ -481,7 +483,7 @@
                  id: lifeLabel
                  anchors.left: parent.left
                  anchors.verticalCenter: parent.verticalCenter
@@ -80,7 +69,7 @@
                  color: Qt.darker(root.contentForeground, 1.5)
                  font.family: root.contentFontFamily
                  font.pixelSize: Style.font.bodySmall
-@@ -600,7 +600,7 @@
+@@ -600,7 +602,7 @@
  
                    PanelToolTip {
                      visible: weekStartMouse.containsMouse
@@ -89,7 +78,7 @@
                      fontFamily: root.contentFontFamily
                    }
                  }
-@@ -723,7 +723,7 @@
+@@ -723,7 +725,7 @@
                  // "MAY 2026" and a "SEPTEMBER 2026".
                  width: Style.space(130)
                  horizontalAlignment: Text.AlignHCenter
@@ -98,7 +87,7 @@
                  color: Qt.darker(root.contentForeground, 1.4)
                  font.family: root.contentFontFamily
                  font.pixelSize: Style.font.body
-@@ -737,7 +737,7 @@
+@@ -737,7 +739,7 @@
                  anchors.leftMargin: -Style.space(8)
                  anchors.verticalCenter: parent.verticalCenter
                  iconText: "󰅁"
@@ -107,7 +96,7 @@
                  foreground: root.contentForeground
                  fontFamily: root.contentFontFamily
                  onClicked: root.moveMonth(-1)
-@@ -748,7 +748,7 @@
+@@ -748,7 +750,7 @@
                  anchors.rightMargin: -Style.space(8)
                  anchors.verticalCenter: parent.verticalCenter
                  iconText: "󰅂"
@@ -116,47 +105,18 @@
                  foreground: root.contentForeground
                  fontFamily: root.contentFontFamily
                  onClicked: root.moveMonth(1)
---- /tmp/c2.qml	2026-09-10 12:57:07.859095845 +0200
-+++ BarWidget.qml	2026-09-09 11:15:35.423749341 +0200
-@@ -28,10 +28,6 @@
-   // What the bar shows is what shell.json stores, so a cycled format is the
-   // format from then on rather than something that reverts on restart.
-   readonly property string activeFormat: configuredFormat
--
--  // A seconds label needs the clock to tick sixty times as often, and a
--  // repaint a second is a price only the formats that print seconds pay.
--  readonly property bool showsSeconds: Model.clockNeedsSeconds(activeFormat)
-   readonly property string displayText: formatted(displayDate)
-   readonly property var verticalLines: displayText.split("\n")
- 
-@@ -56,8 +52,12 @@
-       root.bar.shell.updateEntryInline(root.moduleName, entry)
+--- BarWidget.qml	2026-09-08 20:30:57.000000000 +0200
++++ BarWidget.qml	2026-09-15 10:45:49.817737730 +0200
+@@ -53,7 +53,11 @@
    }
  
-+  // Qt.formatDateTime() renders day and month names from the C locale
-+  // whatever LANG says -- "Tuesday" in a process whose Qt.locale() is
-+  // already sl_SI. Date.toLocaleString() takes the same format string and
-+  // reads the system locale, so "dddd HH:mm" becomes "torek 12:21".
    function formatted(date) {
 -    return Qt.formatDateTime(date, activeFormat.replace(/ww/g, Model.isoWeekLiteral(date.getFullYear(), date.getMonth(), date.getDate())))
++    // Qt.formatDateTime() renders day and month names from the C locale
++    // whatever LANG says -- "Tuesday" in a process whose Qt.locale() is
++    // already sl_SI. Date.toLocaleString() takes the same format string and
++    // reads the system locale, so "dddd HH:mm" becomes "torek 12:21".
 +    return date.toLocaleString(Qt.locale(), activeFormat.replace(/ww/g, Model.isoWeekLiteral(date.getFullYear(), date.getMonth(), date.getDate())))
    }
  
    // ---- Calendar popup. Shape contract for shell.summon/hide/toggle
-@@ -115,7 +115,7 @@
- 
-   SystemClock {
-     id: clock
--    precision: root.showsSeconds ? SystemClock.Seconds : SystemClock.Minutes
-+    precision: SystemClock.Minutes
-     onDateChanged: root.displayDate = date
-   }
- 
-@@ -153,7 +153,6 @@
-     fixedHeight: root.vertical ? root.verticalLines.length * Style.bar.iconSlot : -1
-     horizontalMargin: 8.75
-     verticalPadding: 8.75
--    tooltipText: "Right-click to toggle format"
- 
-     onPressed: function(b) {
-       if (b === Qt.RightButton) root.cycleFormat()

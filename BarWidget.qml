@@ -52,11 +52,11 @@ BarWidget {
       root.bar.shell.updateEntryInline(root.moduleName, entry)
   }
 
-  // Qt.formatDateTime() renders day and month names from the C locale
-  // whatever LANG says -- "Tuesday" in a process whose Qt.locale() is
-  // already sl_SI. Date.toLocaleString() takes the same format string and
-  // reads the system locale, so "dddd HH:mm" becomes "torek 12:21".
   function formatted(date) {
+    // Qt.formatDateTime() renders day and month names from the C locale
+    // whatever LANG says -- "Tuesday" in a process whose Qt.locale() is
+    // already sl_SI. Date.toLocaleString() takes the same format string and
+    // reads the system locale, so "dddd HH:mm" becomes "torek 12:21".
     return date.toLocaleString(Qt.locale(), activeFormat.replace(/ww/g, Model.isoWeekLiteral(date.getFullYear(), date.getMonth(), date.getDate())))
   }
 
