@@ -317,7 +317,11 @@ Panel {
                 id: heroDate
                 textFormat: Text.PlainText
                 anchors.verticalCenter: parent.verticalCenter
-                text: root.today.toLocaleDateString(Qt.locale(), "d. MMMM")
+                // The pattern is a catalog entry, not a constant: Slovenian writes
+                // "16. september" and Russian "16 сентября", and hardcoding either
+                // one is hardcoding a language. The key is upstream's own pattern,
+                // so a catalog that says nothing leaves the English order intact.
+                text: root.today.toLocaleDateString(Qt.locale(), i18n.t("MMMM d"))
                 color: heroMouse.containsMouse
                   ? Style.hoverStateColor(root.contentForeground, Color.accent)
                   : root.contentForeground

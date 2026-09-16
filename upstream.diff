@@ -1,5 +1,5 @@
---- Panel.qml	2026-09-08 20:30:57.000000000 +0200
-+++ Panel.qml	2026-09-15 10:46:37.030169242 +0200
+--- Panel.qml	2026-09-15 23:04:52.000000000 +0200
++++ Panel.qml	2026-09-16 08:42:59.965255999 +0200
 @@ -20,6 +20,8 @@
    ipcTarget: "omarchy.clock"
    manageIpc: false
@@ -24,16 +24,20 @@
    readonly property string nextWeekStartLabel: labelLocale.dayName(Model.toggledWeekStart(weekStart), Locale.LongFormat)
    readonly property var weekdays: Model.weekdayOrder(weekStart)
    readonly property var weeks: Model.monthGrid(viewYear, viewMonth, weekStart, todayKey)
-@@ -315,7 +317,7 @@
+@@ -315,7 +317,11 @@
                  id: heroDate
                  textFormat: Text.PlainText
                  anchors.verticalCenter: parent.verticalCenter
 -                text: Qt.formatDate(root.today, "MMMM d")
-+                text: root.today.toLocaleDateString(Qt.locale(), "d. MMMM")
++                // The pattern is a catalog entry, not a constant: Slovenian writes
++                // "16. september" and Russian "16 сентября", and hardcoding either
++                // one is hardcoding a language. The key is upstream's own pattern,
++                // so a catalog that says nothing leaves the English order intact.
++                text: root.today.toLocaleDateString(Qt.locale(), i18n.t("MMMM d"))
                  color: heroMouse.containsMouse
                    ? Style.hoverStateColor(root.contentForeground, Color.accent)
                    : root.contentForeground
-@@ -338,7 +340,7 @@
+@@ -338,7 +344,7 @@
  
                PanelToolTip {
                  visible: heroMouse.containsMouse
@@ -42,7 +46,7 @@
                  fontFamily: root.contentFontFamily
                }
              }
-@@ -371,7 +373,7 @@
+@@ -371,7 +377,7 @@
  
                  Text {
                    anchors.verticalCenter: parent.verticalCenter
@@ -51,7 +55,7 @@
                    color: Qt.darker(root.contentForeground, 1.5)
                    font.family: root.contentFontFamily
                    font.pixelSize: Style.font.bodySmall
-@@ -394,7 +396,7 @@
+@@ -394,7 +400,7 @@
                    anchors.verticalCenter: parent.verticalCenter
                    anchors.verticalCenterOffset: 0
                    leftPadding: Style.space(6)
@@ -60,7 +64,7 @@
                    color: Qt.darker(root.contentForeground, 1.5)
                    font.family: root.contentFontFamily
                    font.pixelSize: Style.font.bodySmall
-@@ -481,7 +483,7 @@
+@@ -481,7 +487,7 @@
                  id: lifeLabel
                  anchors.left: parent.left
                  anchors.verticalCenter: parent.verticalCenter
@@ -69,7 +73,7 @@
                  color: Qt.darker(root.contentForeground, 1.5)
                  font.family: root.contentFontFamily
                  font.pixelSize: Style.font.bodySmall
-@@ -600,7 +602,7 @@
+@@ -600,7 +606,7 @@
  
                    PanelToolTip {
                      visible: weekStartMouse.containsMouse
@@ -78,7 +82,7 @@
                      fontFamily: root.contentFontFamily
                    }
                  }
-@@ -723,7 +725,7 @@
+@@ -723,7 +729,7 @@
                  // "MAY 2026" and a "SEPTEMBER 2026".
                  width: Style.space(130)
                  horizontalAlignment: Text.AlignHCenter
@@ -87,7 +91,7 @@
                  color: Qt.darker(root.contentForeground, 1.4)
                  font.family: root.contentFontFamily
                  font.pixelSize: Style.font.body
-@@ -737,7 +739,7 @@
+@@ -737,7 +743,7 @@
                  anchors.leftMargin: -Style.space(8)
                  anchors.verticalCenter: parent.verticalCenter
                  iconText: "󰅁"
@@ -96,7 +100,7 @@
                  foreground: root.contentForeground
                  fontFamily: root.contentFontFamily
                  onClicked: root.moveMonth(-1)
-@@ -748,7 +750,7 @@
+@@ -748,7 +754,7 @@
                  anchors.rightMargin: -Style.space(8)
                  anchors.verticalCenter: parent.verticalCenter
                  iconText: "󰅂"
@@ -105,8 +109,8 @@
                  foreground: root.contentForeground
                  fontFamily: root.contentFontFamily
                  onClicked: root.moveMonth(1)
---- BarWidget.qml	2026-09-08 20:30:57.000000000 +0200
-+++ BarWidget.qml	2026-09-15 10:45:49.817737730 +0200
+--- BarWidget.qml	2026-09-15 23:04:52.000000000 +0200
++++ BarWidget.qml	2026-09-15 10:47:06.768454033 +0200
 @@ -53,7 +53,11 @@
    }
  
